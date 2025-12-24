@@ -20,8 +20,12 @@ WORKDIR /var/www/html
 RUN chown -R www-data:www-data /var/www/html \
     && chmod -R 755 /var/www/html
 
-# Enable Apache mod_rewrite if needed
+# Enable Apache mod_rewrite and allow .htaccess overrides
 RUN a2enmod rewrite
+RUN sed -i 's/AllowOverride None/AllowOverride All/g' /etc/apache2/apache2.conf
+
+# Configure PHP
+RUN echo "ServerName localhost" >> /etc/apache2/apache2.conf
 
 # Expose port 80
 EXPOSE 80
