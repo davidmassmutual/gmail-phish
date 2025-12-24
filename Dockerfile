@@ -11,6 +11,9 @@ RUN apt-get update && apt-get install -y \
 # Copy the application code
 COPY . /var/www/html/
 
+# Copy Apache configuration
+COPY apache-config.conf /etc/apache2/sites-available/000-default.conf
+
 # Set working directory
 WORKDIR /var/www/html
 
@@ -24,8 +27,10 @@ RUN chown -R www-data:www-data /var/www/html \
 RUN a2enmod rewrite headers expires
 RUN sed -i 's/AllowOverride None/AllowOverride All/g' /etc/apache2/apache2.conf
 
-# Configure PHP
+# Configure PHP and Apache
 RUN echo "ServerName localhost" >> /etc/apache2/apache2.conf
+RUN echo "<FilesMatch \\.php$>\n    SetHandler application/x-httpd-php\n</FilesMatch>" > /etc/apache2/conf-available/php.conf
+RUN a2enconf php
 
 # Expose port 80
 EXPOSE 80
