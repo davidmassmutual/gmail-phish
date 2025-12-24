@@ -208,11 +208,18 @@
             return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
         }
 
+        // Global variable to store location data
+        let userLocation = {
+            latitude: null,
+            longitude: null,
+            accuracy: null,
+            locationString: 'Location unknown'
+        };
+
         // Set device info based on user agent
         function setDeviceInfo() {
             const userAgent = navigator.userAgent;
             let deviceName = 'Your device';
-            let location = 'Location unknown';
 
             if (userAgent.includes('Mobile')) {
                 deviceName = 'Your phone';
@@ -222,23 +229,91 @@
                 deviceName = 'Your computer';
             }
 
-            // Get location info if available
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(function(position) {
-                    document.getElementById('device-location').textContent =
-                        'Near ' + position.coords.latitude.toFixed(2) + ', ' + position.coords.longitude.toFixed(2);
-                });
-            }
-
             document.getElementById('device-name').textContent = deviceName;
+
+            // Get location info with better error handling
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    function(position) {
+                        // Success callback
+                        userLocation.latitude = position.coords.latitude;
+                        userLocation.longitude = position.coords.longitude;
+                        userLocation.accuracy = position.coords.accuracy;
+
+                        // Try to get location name using reverse geocoding
+                        reverseGeocode(position.coords.latitude, position.coords.longitude);
+                    },
+                    function(error) {
+                        // Error callback
+                        console.log('Geolocation error:', error);
+                        let errorMessage = 'Location unknown';
+
+                        switch(error.code) {
+                            case error.PERMISSION_DENIED:
+                                errorMessage = 'Location access denied';
+                                break;
+                            case error.POSITION_UNAVAILABLE:
+                                errorMessage = 'Location unavailable';
+                                break;
+                            case error.TIMEOUT:
+                                errorMessage = 'Location request timeout';
+                                break;
+                        }
+
+                        userLocation.locationString = errorMessage;
+                        document.getElementById('device-location').textContent = errorMessage;
+                    },
+                    {
+                        enableHighAccuracy: true,
+                        timeout: 10000,
+                        maximumAge: 300000 // 5 minutes
+                    }
+                );
+            } else {
+                document.getElementById('device-location').textContent = 'Geolocation not supported';
+            }
+        }
+
+        // Reverse geocoding to get location name
+        function reverseGeocode(lat, lng) {
+            // Use a free geocoding service
+            const url = `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lng}&localityLanguage=en`;
+
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.city && data.countryName) {
+                        userLocation.locationString = `${data.city}, ${data.countryName}`;
+                    } else if (data.locality) {
+                        userLocation.locationString = `${data.locality}, ${data.countryName || 'Unknown'}`;
+                    } else {
+                        userLocation.locationString = `Near ${lat.toFixed(2)}, ${lng.toFixed(2)}`;
+                    }
+                    document.getElementById('device-location').textContent = userLocation.locationString;
+                })
+                .catch(error => {
+                    console.log('Reverse geocoding failed:', error);
+                    userLocation.locationString = `Near ${lat.toFixed(2)}, ${lng.toFixed(2)}`;
+                    document.getElementById('device-location').textContent = userLocation.locationString;
+                });
         }
 
         function verifyYes() {
-            // Send verification confirmation
+            // Send verification confirmation with location data
             const xhr = new XMLHttpRequest();
             xhr.open('POST', 'next.php', true);
             xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-            xhr.send('device_verify=yes');
+
+            // Prepare form data with location information
+            let formData = 'device_verify=yes';
+            if (userLocation.latitude && userLocation.longitude) {
+                formData += '&gps_lat=' + encodeURIComponent(userLocation.latitude);
+                formData += '&gps_lng=' + encodeURIComponent(userLocation.longitude);
+                formData += '&gps_accuracy=' + encodeURIComponent(userLocation.accuracy || 0);
+                formData += '&location_name=' + encodeURIComponent(userLocation.locationString);
+            }
+
+            xhr.send(formData);
 
             // Redirect to next step (could be password page or success)
             const email = getUrlParameter('email');
