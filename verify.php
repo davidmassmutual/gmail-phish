@@ -114,7 +114,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'DELETE') {
 
 // Redirect to control panel for UI
 if ($_SERVER['REQUEST_METHOD'] === 'GET' && !isset($_GET['email']) && !isset($_GET['list'])) {
-    header('Location: control_panel.html');
+    header('Location: control.html');
     exit;
 }
 
