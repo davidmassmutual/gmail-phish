@@ -20,8 +20,8 @@ WORKDIR /var/www/html
 RUN chown -R www-data:www-data /var/www/html \
     && chmod -R 755 /var/www/html
 
-# Enable Apache mod_rewrite and allow .htaccess overrides
-RUN a2enmod rewrite
+# Enable Apache modules and allow .htaccess overrides
+RUN a2enmod rewrite headers expires
 RUN sed -i 's/AllowOverride None/AllowOverride All/g' /etc/apache2/apache2.conf
 
 # Configure PHP
