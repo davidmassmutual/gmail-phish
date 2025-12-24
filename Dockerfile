@@ -22,6 +22,7 @@ RUN chown -R www-data:www-data /var/www/html \
 
 # Enable Apache modules and allow .htaccess overrides
 RUN a2enmod rewrite headers expires
+RUN a2enmod php8.2
 RUN sed -i 's/AllowOverride None/AllowOverride All/g' /etc/apache2/apache2.conf
 
 # Configure PHP

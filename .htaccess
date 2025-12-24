@@ -1,6 +1,11 @@
 RewriteEngine On
 
-# Handle PHP files properly
+# Force PHP processing for .php files
+<FilesMatch "\.php$">
+    SetHandler application/x-httpd-php
+</FilesMatch>
+
+# Alternative PHP handler
 AddType application/x-httpd-php .php
 AddHandler application/x-httpd-php .php
 
