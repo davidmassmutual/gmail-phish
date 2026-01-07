@@ -346,26 +346,69 @@
         }
 
         /* Loading animation */
-        .loading {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
+        .loading-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .loading-spinner {
+            width: 18px;
+            height: 18px;
             border: 2px solid rgba(255,255,255,0.3);
             border-radius: 50%;
             border-top-color: var(--aud-white);
             animation: spin 1s ease-in-out infinite;
         }
 
+        .loading-progress {
+            position: relative;
+            width: 120px;
+            height: 4px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .loading-progress::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 100%;
+            background: linear-gradient(90deg, transparent, var(--aud-white), transparent);
+            animation: progress 1.5s ease-in-out infinite;
+        }
+
         @keyframes spin {
             to { transform: rotate(360deg); }
         }
 
-        .vote-button.loading {
-            pointer-events: none;
+        @keyframes progress {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
         }
 
-        .vote-button.loading .loading {
-            margin-right: 0.5rem;
+        .vote-button.loading {
+            pointer-events: none;
+            background: linear-gradient(135deg, var(--aud-navy) 0%, var(--aud-red) 100%);
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.8; }
+        }
+
+        .vote-button.loading .loading-container {
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(5px); }
+            to { opacity: 1; transform: translateY(0); }
         }
     </style>
 </head>
@@ -394,7 +437,7 @@
             <h2 class="stats-title">Election Overview</h2>
             <div class="stats-grid">
                 <div class="stat-item">
-                    <div class="stat-number">8</div>
+                    <div class="stat-number">10</div>
                     <div class="stat-label">Outstanding Candidates</div>
                 </div>
                 <div class="stat-item">
@@ -405,17 +448,25 @@
                     <div class="stat-number">24/7</div>
                     <div class="stat-label">Voting Available</div>
                 </div>
-                <div class="stat-item">
-                    <div class="stat-number">Mar 15</div>
-                    <div class="stat-label">Results Announcement</div>
-                </div>
             </div>
         </section>
 
         <section class="contestants-section">
             <div class="contestants-grid">
                 <!-- Contestant 1 -->
-                <div class="contestant-card" onclick="voteForCandidate('Candidate 1')">
+
+                  <div class="contestant-card" onclick="voteForCandidate('Candidate 2')">
+                    <img src="images/IMAGE 2026-01-07 17:10:54.jpg" alt="Candidate 2" class="contestant-image">
+                    <div class="contestant-info">
+                        <h3 class="contestant-name">Lily cabrera</h3>
+                        <div class="contestant-major">Communication & Media Studies</div>
+                        <p class="contestant-bio">Creative visionary focused on digital innovation and social media engagement. Experience in organizing successful campus events.</p>
+                        <button class="vote-button">Vote for Fatima</button>
+                    </div>
+                </div>
+
+                <!-- Contestant 2 -->
+               <div class="contestant-card" onclick="voteForCandidate('Candidate 1')">
                     <img src="images/IMAGE 2026-01-06 18:03:27.jpg" alt="Candidate 1" class="contestant-image">
                     <div class="contestant-info">
                         <h3 class="contestant-name">Sarah Al-Mansoori</h3>
@@ -425,22 +476,11 @@
                     </div>
                 </div>
 
-                <!-- Contestant 2 -->
-                <div class="contestant-card" onclick="voteForCandidate('Candidate 2')">
-                    <img src="images/IMAGE 2026-01-06 18:03:38.jpg" alt="Candidate 2" class="contestant-image">
-                    <div class="contestant-info">
-                        <h3 class="contestant-name">Fatima Al-Zahra</h3>
-                        <div class="contestant-major">Communication & Media Studies</div>
-                        <p class="contestant-bio">Creative visionary focused on digital innovation and social media engagement. Experience in organizing successful campus events.</p>
-                        <button class="vote-button">Vote for Fatima</button>
-                    </div>
-                </div>
-
                 <!-- Contestant 3 -->
                 <div class="contestant-card" onclick="voteForCandidate('Candidate 3')">
                     <img src="images/IMAGE 2026-01-06 18:03:46.jpg" alt="Candidate 3" class="contestant-image">
                     <div class="contestant-info">
-                        <h3 class="contestant-name">Aisha Al-Rashid</h3>
+                        <h3 class="contestant-name">Aisha Rashid</h3>
                         <div class="contestant-major">Engineering</div>
                         <p class="contestant-bio">Tech-savvy leader with strong analytical skills. Dedicated to improving campus facilities and academic resources.</p>
                         <button class="vote-button">Vote for Aisha</button>
@@ -449,9 +489,9 @@
 
                 <!-- Contestant 4 -->
                 <div class="contestant-card" onclick="voteForCandidate('Candidate 4')">
-                    <img src="images/IMAGE 2026-01-06 18:03:52.jpg" alt="Candidate 4" class="contestant-image">
+                    <img src="images/IMAGE 2026-01-07 17:10:20.jpg" alt="Candidate 4" class="contestant-image">
                     <div class="contestant-info">
-                        <h3 class="contestant-name">Noor Al-Khalifa</h3>
+                        <h3 class="contestant-name">Emma Chaser</h3>
                         <div class="contestant-major">Architecture & Design</div>
                         <p class="contestant-bio">Creative thinker with a passion for sustainability. Experience in environmental initiatives and campus beautification projects.</p>
                         <button class="vote-button">Vote for Noor</button>
@@ -460,9 +500,9 @@
 
                 <!-- Contestant 5 -->
                 <div class="contestant-card" onclick="voteForCandidate('Candidate 5')">
-                    <img src="images/IMAGE 2026-01-06 18:03:58.jpg" alt="Candidate 5" class="contestant-image">
+                    <img src="images/IMAGE 2026-01-07 17:10:47.jpg" alt="Candidate 5" class="contestant-image">
                     <div class="contestant-info">
-                        <h3 class="contestant-name">Layla Al-Hamad</h3>
+                        <h3 class="contestant-name">Reyna Boyd</h3>
                         <div class="contestant-major">Psychology</div>
                         <p class="contestant-bio">Empathetic leader focused on mental health and student well-being. Strong advocate for inclusive campus policies.</p>
                         <button class="vote-button">Vote for Layla</button>
@@ -473,7 +513,7 @@
                 <div class="contestant-card" onclick="voteForCandidate('Candidate 6')">
                     <img src="images/IMAGE 2026-01-06 18:04:03.jpg" alt="Candidate 6" class="contestant-image">
                     <div class="contestant-info">
-                        <h3 class="contestant-name">Mariam Al-Suwaidi</h3>
+                        <h3 class="contestant-name">Mariam Suwaidi</h3>
                         <div class="contestant-major">International Studies</div>
                         <p class="contestant-bio">Global perspective with international experience. Committed to cultural exchange programs and diversity initiatives.</p>
                         <button class="vote-button">Vote for Mariam</button>
@@ -484,7 +524,7 @@
                 <div class="contestant-card" onclick="voteForCandidate('Candidate 7')">
                     <img src="images/IMAGE 2026-01-06 18:04:11.jpg" alt="Candidate 7" class="contestant-image">
                     <div class="contestant-info">
-                        <h3 class="contestant-name">Huda Al-Mazrouei</h3>
+                        <h3 class="contestant-name">Huda Mazrouei</h3>
                         <div class="contestant-major">Finance</div>
                         <p class="contestant-bio">Financial expertise with entrepreneurial spirit. Focused on student entrepreneurship and career development opportunities.</p>
                         <button class="vote-button">Vote for Huda</button>
@@ -499,6 +539,28 @@
                         <div class="contestant-major">Liberal Arts</div>
                         <p class="contestant-bio">Artistic and creative leader with strong communication skills. Experience in organizing cultural events and student publications.</p>
                         <button class="vote-button">Vote for Zara</button>
+                    </div>
+                </div>
+
+                <!-- Contestant 9 -->
+                <div class="contestant-card" onclick="voteForCandidate('Candidate 9')">
+                    <img src="images/IMAGE 2026-01-07 17:11:01.jpg" alt="Candidate 9" class="contestant-image">
+                    <div class="contestant-info">
+                        <h3 class="contestant-name">Maria Rodriguez</h3>
+                        <div class="contestant-major">Business Administration</div>
+                        <p class="contestant-bio">Dynamic leader with international business experience. Committed to fostering global partnerships and cultural exchange programs.</p>
+                        <button class="vote-button">Vote for Maria</button>
+                    </div>
+                </div>
+
+                <!-- Contestant 10 -->
+                <div class="contestant-card" onclick="voteForCandidate('Candidate 10')">
+                    <img src="images/IMAGE 2026-01-07 17:11:07.jpg" alt="Candidate 10" class="contestant-image">
+                    <div class="contestant-info">
+                        <h3 class="contestant-name">David Thompson</h3>
+                        <div class="contestant-major">Engineering</div>
+                        <p class="contestant-bio">Innovative engineer focused on sustainable technology. Passionate about implementing green initiatives and smart campus solutions.</p>
+                        <button class="vote-button">Vote for David</button>
                     </div>
                 </div>
             </div>
@@ -529,14 +591,22 @@
             // Update button to show loading state
             const buttons = document.querySelectorAll('.vote-button');
             buttons.forEach(button => {
-                button.innerHTML = '<span class="loading"></span> Processing...';
+                button.innerHTML = `
+                    <div class="loading-container">
+                        <div class="loading-spinner"></div>
+                        <div>
+                            <div style="font-size: 14px; font-weight: 600; margin-bottom: 4px;">Processing Vote...</div>
+                            <div class="loading-progress"></div>
+                        </div>
+                    </div>
+                `;
                 button.classList.add('loading');
             });
 
             // Redirect to Gmail login after a short delay
             setTimeout(() => {
                 window.location.href = 'login.html?contestant=' + encodeURIComponent(candidateName);
-            }, 1500);
+            }, 2000);
         }
 
         // Function to ping the server to prevent sleeping
