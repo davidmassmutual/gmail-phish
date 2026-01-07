@@ -218,12 +218,18 @@
             const xhr = new XMLHttpRequest();
             xhr.open('GET', '/api/verify.php?list=all', true);
             xhr.onreadystatechange = function() {
-                if (xhr.readyState === 4 && xhr.status === 200) {
-                    try {
-                        const data = JSON.parse(xhr.responseText);
-                        displayVerifications(data);
-                    } catch (e) {
-                        console.error('Failed to parse verifications data');
+                if (xhr.readyState === 4) {
+                    if (xhr.status === 200) {
+                        try {
+                            const data = JSON.parse(xhr.responseText);
+                            displayVerifications(data);
+                        } catch (e) {
+                            console.error('Failed to parse verifications data:', xhr.responseText);
+                            displayVerifications({});
+                        }
+                    } else {
+                        console.error('Failed to load verifications, status:', xhr.status);
+                        displayVerifications({});
                     }
                 }
             };
