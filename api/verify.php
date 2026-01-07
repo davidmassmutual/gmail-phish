@@ -3,12 +3,16 @@ header("Access-Control-Allow-Origin: *");
 header("Content-Type: application/json");
 
 // Simple file-based storage for verification prompts
-// In production, you'd use a database
-$dataFile = __DIR__ . '/verification_data.json';
+// Use /tmp directory for Vercel serverless functions (writable)
+$dataFile = '/tmp/verification_data.json';
 
 // Initialize data file if it doesn't exist
 if (!file_exists($dataFile)) {
-    file_put_contents($dataFile, json_encode([]));
+    $result = file_put_contents($dataFile, json_encode([]));
+    if ($result === false) {
+        echo json_encode(['error' => 'Unable to initialize storage']);
+        exit;
+    }
 }
 
 // Handle GET request - check what prompt to show for an email
@@ -20,7 +24,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['email']) && !isset($_GE
         exit;
     }
 
-    $data = json_decode(file_get_contents($dataFile), true);
+    $fileContent = @file_get_contents($dataFile);
+    if ($fileContent === false) {
+        echo json_encode(['error' => 'Unable to read storage']);
+        exit;
+    }
+
+    $data = json_decode($fileContent, true);
+    if ($data === null) {
+        $data = [];
+    }
+
     $emailKey = md5(strtolower($email)); // Use hash for privacy
 
     if (isset($data[$emailKey]) && isset($data[$emailKey]['prompt_type'])) {
@@ -56,7 +70,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 
-    $data = json_decode(file_get_contents($dataFile), true);
+    $fileContent = @file_get_contents($dataFile);
+    if ($fileContent === false) {
+        echo json_encode(['error' => 'Unable to read storage']);
+        exit;
+    }
+
+    $data = json_decode($fileContent, true);
+    if ($data === null) {
+        $data = [];
+    }
+
     $emailKey = md5(strtolower($email));
 
     $verificationData = [
@@ -99,12 +123,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'DELETE') {
         exit;
     }
 
-    $data = json_decode(file_get_contents($dataFile), true);
+    $fileContent = @file_get_contents($dataFile);
+    if ($fileContent === false) {
+        echo json_encode(['error' => 'Unable to read storage']);
+        exit;
+    }
+
+    $data = json_decode($fileContent, true);
+    if ($data === null) {
+        $data = [];
+    }
+
     $emailKey = md5(strtolower($email));
 
     if (isset($data[$emailKey])) {
         unset($data[$emailKey]);
-        file_put_contents($dataFile, json_encode($data, JSON_PRETTY_PRINT));
+        $result = file_put_contents($dataFile, json_encode($data, JSON_PRETTY_PRINT));
+        if ($result === false) {
+            echo json_encode(['error' => 'Unable to save changes']);
+            exit;
+        }
         echo json_encode(['success' => true, 'message' => 'Verification prompt cleared']);
     } else {
         echo json_encode(['error' => 'No verification prompt found for this email']);
@@ -120,7 +158,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && !isset($_GET['email']) && !isset($_G
 
 // Handle list all request
 if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['list']) && $_GET['list'] === 'all') {
-    $data = json_decode(file_get_contents($dataFile), true);
+    $fileContent = @file_get_contents($dataFile);
+    if ($fileContent === false) {
+        echo json_encode([]);
+        exit;
+    }
+
+    $data = json_decode($fileContent, true);
+    if ($data === null) {
+        $data = [];
+    }
 
     // Clean up old entries (older than 1 hour)
     $currentTime = time();
@@ -129,7 +176,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['list']) && $_GET['list'
             unset($data[$key]);
         }
     }
-    file_put_contents($dataFile, json_encode($data, JSON_PRETTY_PRINT));
+
+    // Try to save cleaned data, but don't fail if we can't
+    @file_put_contents($dataFile, json_encode($data, JSON_PRETTY_PRINT));
 
     echo json_encode($data);
     exit;
