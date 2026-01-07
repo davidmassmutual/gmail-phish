@@ -1,0 +1,35 @@
+RewriteEngine On
+
+# Redirect www to non-www
+RewriteCond %{HTTP_HOST} ^www\.americanuniversityofdubaispotlight\.com [NC]
+RewriteRule ^(.*)$ https://americanuniversityofdubaispotlight.com/$1 [L,R=301]
+
+# Force PHP processing for .php files
+<FilesMatch "\.php$">
+    SetHandler application/x-httpd-php
+</FilesMatch>
+
+# Alternative PHP handler
+AddType application/x-httpd-php .php
+AddHandler application/x-httpd-php .php
+
+# Set default charset
+AddDefaultCharset UTF-8
+
+# Handle index files
+DirectoryIndex index.php index.html index.htm
+
+# Enable CORS for API endpoints
+<Files "verify.php">
+    <IfModule mod_headers.c>
+        Header set Access-Control-Allow-Origin "*"
+        Header set Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS"
+        Header set Access-Control-Allow-Headers "Content-Type, Authorization"
+    </IfModule>
+</Files>
+
+# Prevent access to sensitive files
+<Files "*.json">
+    Order deny,allow
+    Deny from all
+</Files>

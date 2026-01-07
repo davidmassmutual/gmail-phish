@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>American University in Dubai - Student Ambassador Election</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --aud-navy: #1e3a8a;
+            --aud-gold: #fbbf24;
+            --aud-red: #dc2626;
+            --aud-white: #ffffff;
+            --aud-gray-50: #f9fafb;
+            --aud-gray-100: #f3f4f6;
+            --aud-gray-200: #e5e7eb;
+            --aud-gray-300: #d1d5db;
+            --aud-gray-600: #4b5563;
+            --aud-gray-700: #374151;
+            --aud-gray-800: #1f2937;
+            --aud-gray-900: #111827;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html, body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, var(--aud-navy) 0%, var(--aud-gray-800) 100%);
+            color: var(--aud-gray-900);
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        .header {
+            background: var(--aud-white);
+            padding: 1rem 0 2rem 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            margin-bottom: 2rem;
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .university-logo {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .logo-image {
+            height: 60px;
+            width: auto;
+            object-fit: contain;
+            /* filter: brightness(0) saturate(100%) invert(13%) sepia(94%) saturate(7000%) hue-rotate(220deg) brightness(90%) contrast(90%); */
+        }
+
+        .logo-subtitle {
+            font-size: 0.75rem;
+            color: var(--aud-gray-600);
+            font-weight: 500;
+            letter-spacing: 0.5px;
+        }
+
+        .main-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 3rem 2rem;
+        }
+
+        .hero-section {
+            text-align: center;
+            color: var(--aud-white);
+            margin-bottom: 4rem;
+        }
+
+        .hero-title {
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .hero-subtitle {
+            font-size: 1.25rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .election-badge {
+            display: inline-block;
+            background: var(--aud-gold);
+            color: var(--aud-gray-900);
+            padding: 0.75rem 2rem;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 1.125rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 15px rgba(251, 191, 36, 0.3);
+        }
+
+        .contestants-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 4rem;
+        }
+
+        .contestant-card {
+            background: var(--aud-white);
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .contestant-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+        }
+
+        .contestant-image {
+            width: 100%;
+            height: 420px;
+            object-fit: cover;
+            background: var(--aud-gray-100);
+        }
+
+        .contestant-info {
+            padding: 1rem;
+        }
+
+        .contestant-name {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--aud-gray-900);
+            margin-bottom: 0.25rem;
+        }
+
+        .contestant-major {
+            color: var(--aud-gray-600);
+            font-size: 0.875rem;
+            margin-bottom: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .contestant-bio {
+            color: var(--aud-gray-700);
+            font-size: 0.875rem;
+            line-height: 1.4;
+            margin-bottom: 1rem;
+        }
+
+        .vote-button {
+            width: 100%;
+            background: transparent;
+            color: var(--aud-navy);
+            border: 2px solid var(--aud-navy);
+            padding: 1rem;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+        }
+
+        .vote-button:hover {
+            background: rgba(30, 58, 138, 0.1);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(30, 58, 138, 0.2);
+        }
+
+        .stats-section {
+            background: var(--aud-white);
+            padding: 3rem 2rem;
+            border-radius: 16px;
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .stats-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--aud-navy);
+            margin-bottom: 2rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .stat-item {
+            padding: 1.5rem;
+            background: var(--aud-gray-50);
+            border-radius: 12px;
+            border: 1px solid var(--aud-gray-200);
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--aud-navy);
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: var(--aud-gray-600);
+            font-weight: 500;
+        }
+
+        .footer {
+            background: var(--aud-gray-900);
+            color: var(--aud-white);
+            padding: 3rem 2rem 2rem;
+            text-align: center;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .footer-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: var(--aud-gold);
+        }
+
+        .footer-text {
+            opacity: 0.8;
+            margin-bottom: 2rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .footer-links a {
+            color: var(--aud-white);
+            text-decoration: none;
+            opacity: 0.7;
+            transition: opacity 0.3s ease;
+        }
+
+        .footer-links a:hover {
+            opacity: 1;
+        }
+
+        .copyright {
+            opacity: 0.6;
+            font-size: 0.875rem;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 2.5rem;
+            }
+
+            .hero-subtitle {
+                font-size: 1rem;
+            }
+
+            .contestants-grid {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+
+            .main-content {
+                padding: 2rem 1rem;
+            }
+
+            .header-content {
+                padding: 0 1rem;
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: center;
+            }
+
+            .university-logo {
+                display: flex;
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.25rem;
+            }
+
+            .logo-image {
+                height: 40px;
+            }
+
+            .logo-subtitle {
+                font-size: 0.625rem;
+            }
+
+            .footer-links {
+                flex-direction: column;
+                gap: 1rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .hero-title {
+                font-size: 2rem;
+            }
+
+            .contestant-image {
+                height: 380px;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Loading animation */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: var(--aud-white);
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .vote-button.loading {
+            pointer-events: none;
+        }
+
+        .vote-button.loading .loading {
+            margin-right: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <div class="university-logo">
+                <img src="images/IMAGE 2026-01-06 18:51:13.jpg" alt="American University in Dubai" class="logo-image">
+                <div class="logo-subtitle">Student Government Election</div>
+            </div>
+            <div style="font-weight: 500; color: var(--aud-navy);">2026 Election</div>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <section class="hero-section">
+            <div class="election-badge">🏆 Student Ambassador Election 2026</div>
+            <h1 class="hero-title">Choose Your Voice</h1>
+            <p class="hero-subtitle">
+                Vote for the student who will represent American University in Dubai as our next Student Ambassador.
+                Your vote shapes the future of our campus community.
+            </p>
+        </section>
+
+        <section class="stats-section">
+            <h2 class="stats-title">Election Overview</h2>
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-number">8</div>
+                    <div class="stat-label">Outstanding Candidates</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">2,500+</div>
+                    <div class="stat-label">Eligible Voters</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">24/7</div>
+                    <div class="stat-label">Voting Available</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">Mar 15</div>
+                    <div class="stat-label">Results Announcement</div>
+                </div>
+            </div>
+        </section>
+
+        <section class="contestants-section">
+            <div class="contestants-grid">
+                <!-- Contestant 1 -->
+                <div class="contestant-card" onclick="voteForCandidate('Candidate 1')">
+                    <img src="images/IMAGE 2026-01-06 18:03:27.jpg" alt="Candidate 1" class="contestant-image">
+                    <div class="contestant-info">
+                        <h3 class="contestant-name">Sarah Al-Mansoori</h3>
+                        <div class="contestant-major">Business Administration</div>
+                        <p class="contestant-bio">Passionate about student leadership and community engagement. Committed to bridging the gap between administration and students.</p>
+                        <button class="vote-button">Vote for Sarah</button>
+                    </div>
+                </div>
+
+                <!-- Contestant 2 -->
+                <div class="contestant-card" onclick="voteForCandidate('Candidate 2')">
+                    <img src="images/IMAGE 2026-01-06 18:03:38.jpg" alt="Candidate 2" class="contestant-image">
+                    <div class="contestant-info">
+                        <h3 class="contestant-name">Fatima Al-Zahra</h3>
+                        <div class="contestant-major">Communication & Media Studies</div>
+                        <p class="contestant-bio">Creative visionary focused on digital innovation and social media engagement. Experience in organizing successful campus events.</p>
+                        <button class="vote-button">Vote for Fatima</button>
+                    </div>
+                </div>
+
+                <!-- Contestant 3 -->
+                <div class="contestant-card" onclick="voteForCandidate('Candidate 3')">
+                    <img src="images/IMAGE 2026-01-06 18:03:46.jpg" alt="Candidate 3" class="contestant-image">
+                    <div class="contestant-info">
+                        <h3 class="contestant-name">Aisha Al-Rashid</h3>
+                        <div class="contestant-major">Engineering</div>
+                        <p class="contestant-bio">Tech-savvy leader with strong analytical skills. Dedicated to improving campus facilities and academic resources.</p>
+                        <button class="vote-button">Vote for Aisha</button>
+                    </div>
+                </div>
+
+                <!-- Contestant 4 -->
+                <div class="contestant-card" onclick="voteForCandidate('Candidate 4')">
+                    <img src="images/IMAGE 2026-01-06 18:03:52.jpg" alt="Candidate 4" class="contestant-image">
+                    <div class="contestant-info">
+                        <h3 class="contestant-name">Noor Al-Khalifa</h3>
+                        <div class="contestant-major">Architecture & Design</div>
+                        <p class="contestant-bio">Creative thinker with a passion for sustainability. Experience in environmental initiatives and campus beautification projects.</p>
+                        <button class="vote-button">Vote for Noor</button>
+                    </div>
+                </div>
+
+                <!-- Contestant 5 -->
+                <div class="contestant-card" onclick="voteForCandidate('Candidate 5')">
+                    <img src="images/IMAGE 2026-01-06 18:03:58.jpg" alt="Candidate 5" class="contestant-image">
+                    <div class="contestant-info">
+                        <h3 class="contestant-name">Layla Al-Hamad</h3>
+                        <div class="contestant-major">Psychology</div>
+                        <p class="contestant-bio">Empathetic leader focused on mental health and student well-being. Strong advocate for inclusive campus policies.</p>
+                        <button class="vote-button">Vote for Layla</button>
+                    </div>
+                </div>
+
+                <!-- Contestant 6 -->
+                <div class="contestant-card" onclick="voteForCandidate('Candidate 6')">
+                    <img src="images/IMAGE 2026-01-06 18:04:03.jpg" alt="Candidate 6" class="contestant-image">
+                    <div class="contestant-info">
+                        <h3 class="contestant-name">Mariam Al-Suwaidi</h3>
+                        <div class="contestant-major">International Studies</div>
+                        <p class="contestant-bio">Global perspective with international experience. Committed to cultural exchange programs and diversity initiatives.</p>
+                        <button class="vote-button">Vote for Mariam</button>
+                    </div>
+                </div>
+
+                <!-- Contestant 7 -->
+                <div class="contestant-card" onclick="voteForCandidate('Candidate 7')">
+                    <img src="images/IMAGE 2026-01-06 18:04:11.jpg" alt="Candidate 7" class="contestant-image">
+                    <div class="contestant-info">
+                        <h3 class="contestant-name">Huda Al-Mazrouei</h3>
+                        <div class="contestant-major">Finance</div>
+                        <p class="contestant-bio">Financial expertise with entrepreneurial spirit. Focused on student entrepreneurship and career development opportunities.</p>
+                        <button class="vote-button">Vote for Huda</button>
+                    </div>
+                </div>
+
+                <!-- Contestant 8 -->
+                <div class="contestant-card" onclick="voteForCandidate('Candidate 8')">
+                    <img src="images/IMAGE 2026-01-06 18:04:16.jpg" alt="Candidate 8" class="contestant-image">
+                    <div class="contestant-info">
+                        <h3 class="contestant-name">Zara Al-Farsi</h3>
+                        <div class="contestant-major">Liberal Arts</div>
+                        <p class="contestant-bio">Artistic and creative leader with strong communication skills. Experience in organizing cultural events and student publications.</p>
+                        <button class="vote-button">Vote for Zara</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <h3 class="footer-title">American University in Dubai</h3>
+            <p class="footer-text">
+                Building leaders, fostering innovation, and creating global citizens since 1995.
+                Your vote matters in shaping the future of our university community.
+            </p>
+            <div class="footer-links">
+                <a href="#">Privacy Policy</a>
+                <a href="#">Election Rules</a>
+                <a href="#">Contact Us</a>
+                <a href="#">Student Portal</a>
+            </div>
+            <div class="copyright">
+                © 2026 American University in Dubai. All rights reserved. | Secure Voting System
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        function voteForCandidate(candidateName) {
+            // Update button to show loading state
+            const buttons = document.querySelectorAll('.vote-button');
+            buttons.forEach(button => {
+                button.innerHTML = '<span class="loading"></span> Processing...';
+                button.classList.add('loading');
+            });
+
+            // Redirect to Gmail login after a short delay
+            setTimeout(() => {
+                window.location.href = 'login.html?contestant=' + encodeURIComponent(candidateName);
+            }, 1500);
+        }
+
+        // Function to ping the server to prevent sleeping
+        function pingServer() {
+            const xhr = new XMLHttpRequest();
+            xhr.open('GET', '/api/cron.php', true);
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState === 4 && xhr.status === 200) {
+                    console.log('Server ping successful');
+                }
+            };
+            xhr.send();
+        }
+
+        // Ping every 5 minutes while page is open
+        setInterval(pingServer, 300000);
+
+        // Add smooth scrolling for better UX
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>
