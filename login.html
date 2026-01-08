@@ -381,14 +381,26 @@
         // Handle input focus/blur for styling
         const inputWrapper = document.querySelector('.login-input-wrapper');
         const input = document.getElementById('email');
+        const label = document.querySelector('.login-input-label');
 
         input.addEventListener('focus', function() {
             inputWrapper.classList.add('focused');
         });
 
         input.addEventListener('blur', function() {
+            // Only remove focused class if input is empty
+            // If there's content, keep focused state so label stays at top
             if (!this.value.trim()) {
                 inputWrapper.classList.remove('focused');
+            }
+        });
+
+        // Hide placeholder label when user starts typing
+        input.addEventListener('input', function() {
+            if (this.value.trim()) {
+                label.style.display = 'none';
+            } else {
+                label.style.display = 'block';
             }
         });
 
