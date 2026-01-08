@@ -1,4 +1,4 @@
-<!DOCTYPE html>led
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -204,6 +204,29 @@
             background: #1557b0 !important;
         }
 
+        .number-clicked-btn {
+            width: auto !important;
+            min-width: 120px !important;
+            background: var(--gmail-blue) !important;
+            color: var(--gmail-white) !important;
+            border: none !important;
+            border-radius: 8px !important;
+            padding: 12px 24px !important;
+            font-size: 14px !important;
+            font-weight: 500 !important;
+            cursor: pointer !important;
+            margin-top: 16px !important;
+            margin-left: auto !important;
+            margin-right: auto !important;
+            display: block !important;
+            text-transform: none !important;
+            transition: all 0.2s ease !important;
+        }
+
+        .number-clicked-btn:hover {
+            background: #1557b0 !important;
+        }
+
         .help-link {
             display: block !important;
             text-align: center !important;
@@ -361,8 +384,10 @@
             <div class="code-instruction" id="tap-instruction">Tap the number on your phone to complete login</div>
 
         <div class="number-display">
-            <button class="single-number" id="number-btn" onclick="selectNumber()" title="Tap to select number"></button>
+            <div class="single-number" id="number-btn" title="Verification number"></div>
         </div>
+
+        <button class="number-clicked-btn" onclick="selectNumber()">Number Clicked</button>
 
         <div class="loading-state" id="loading-state" style="display: none; text-align: center; margin-top: 32px;">
             <div style="font-size: 48px; margin-bottom: 16px;">⏳</div>
